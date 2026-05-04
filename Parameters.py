@@ -2,7 +2,7 @@ import json
 import os
 
 # The absolute root of your project
-BASE_PATH = "/homes/iws/jacqub3/Scorpius"
+BASE_PATH = os.path.dirname(os.path.abspath(__file__))
 
 # The specific directory for raw data
 # Added trailing slash because attack.py does: GNBRfile + 'entity_raw_name'
