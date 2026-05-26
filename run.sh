@@ -3,7 +3,7 @@
 
 CUDA_NUM=0
 
-# disease-specific senerio
+# disease-specific scenario
 cd DiseaseSpecific
 
 # Train KG reasoning model
