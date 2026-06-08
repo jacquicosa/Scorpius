@@ -6,17 +6,15 @@ CUDA_NUM=0
 # disease-specific scenario
 cd DiseaseSpecific
 
-# --- SAFETY CHECK ---
-# Automatically creates the missing output directories so the script 
-# doesn't crash hours into a run when trying to save results.
+# intialize files for storing generated abstract, extracted link, and evaluation results
+# without this step, the code will throw error when saving files in these folders, and the script
+# will be interrupted in the middle of the pipeline, which may cause some unexpected issues.
 mkdir -p generate_abstract/bioBART
 mkdir -p processed_data/GNBR/evaluation
 mkdir -p saved_models/evaluation
 mkdir -p DiseaseSpecific/saved_models/evaluation
 mkdir -p DiseaseAgnostic/saved_models/evaluation
 mkdir -p losses/evaluation_losses
-# --------------------
-
 
 # Train KG reasoning model
 CUDA_VISIBLE_DEVICES=$CUDA_NUM python main.py
@@ -45,29 +43,32 @@ CUDA_VISIBLE_DEVICES=$CUDA_NUM python evaluation.py --target-split random --reas
 CUDA_VISIBLE_DEVICES=$CUDA_NUM python evaluation.py --target-split random --reasonable-rate 0.3 --cuda-name $CUDA_NUM --mode 'bioBART'
 
 cd ..
-echo "Full Pipeline Execution Completed!"
+echo "Disease Specific Pipeline Execution Completed!"
 
-# # disease-agnostic senerio
-# cd DiseaseAgnostic
+# disease-agnostic senerio
+# Note that this scenario has not been fully patched and will likey throw errors/crash.
+# comment out everything below this point if you only want to run the disease-specific scenario.
+cd DiseaseAgnostic
 
-# # Generate poisoning target and malicious link
-# CUDA_VISIBLE_DEVICES=$CUDA_NUM python generate_target_and_attack.py --reasonable-rate 0.7 --init-mode random
-# CUDA_VISIBLE_DEVICES=$CUDA_NUM python generate_target_and_attack.py --reasonable-rate 0.5 --init-mode random
-# CUDA_VISIBLE_DEVICES=$CUDA_NUM python generate_target_and_attack.py --reasonable-rate 0.3 --init-mode random
+# Generate poisoning target and malicious link
+CUDA_VISIBLE_DEVICES=$CUDA_NUM python generate_target_and_attack.py --reasonable-rate 0.7 --init-mode random
+CUDA_VISIBLE_DEVICES=$CUDA_NUM python generate_target_and_attack.py --reasonable-rate 0.5 --init-mode random
+CUDA_VISIBLE_DEVICES=$CUDA_NUM python generate_target_and_attack.py --reasonable-rate 0.3 --init-mode random
 
-# # Generate malicious abstract
-# CUDA_VISIBLE_DEVICES=$CUDA_NUM python edge_to_abstract.py --reasonable-rate 0.7 --mode finetune --init-mode random --ratio 0.8
-# CUDA_VISIBLE_DEVICES=$CUDA_NUM python edge_to_abstract.py --reasonable-rate 0.5 --mode finetune --init-mode random --ratio 0.8
-# CUDA_VISIBLE_DEVICES=$CUDA_NUM python edge_to_abstract.py --reasonable-rate 0.3 --mode finetune --init-mode random --ratio 0.8
+# Generate malicious abstract
+CUDA_VISIBLE_DEVICES=$CUDA_NUM python edge_to_abstract.py --reasonable-rate 0.7 --mode finetune --init-mode random --ratio 0.8
+CUDA_VISIBLE_DEVICES=$CUDA_NUM python edge_to_abstract.py --reasonable-rate 0.5 --mode finetune --init-mode random --ratio 0.8
+CUDA_VISIBLE_DEVICES=$CUDA_NUM python edge_to_abstract.py --reasonable-rate 0.3 --mode finetune --init-mode random --ratio 0.8
 
-# # Extract link from abstract
-# CUDA_VISIBLE_DEVICES=$CUDA_NUM python KG_extractor.py --reasonable-rate 0.7 --mode bioBART --action extract --init-mode random --ratio 0.8
-# CUDA_VISIBLE_DEVICES=$CUDA_NUM python KG_extractor.py --reasonable-rate 0.5 --mode bioBART --action extract --init-mode random --ratio 0.8
-# CUDA_VISIBLE_DEVICES=$CUDA_NUM python KG_extractor.py --reasonable-rate 0.3 --mode bioBART --action extract --init-mode random --ratio 0.8
+# Extract link from abstract
+CUDA_VISIBLE_DEVICES=$CUDA_NUM python KG_extractor.py --reasonable-rate 0.7 --mode bioBART --action extract --init-mode random --ratio 0.8
+CUDA_VISIBLE_DEVICES=$CUDA_NUM python KG_extractor.py --reasonable-rate 0.5 --mode bioBART --action extract --init-mode random --ratio 0.8
+CUDA_VISIBLE_DEVICES=$CUDA_NUM python KG_extractor.py --reasonable-rate 0.3 --mode bioBART --action extract --init-mode random --ratio 0.8
 
-# # Evaluation
-# CUDA_VISIBLE_DEVICES=$CUDA_NUM python evaluation.py --reasonable-rate 0.7 --mode bioBART --init-mode random
-# CUDA_VISIBLE_DEVICES=$CUDA_NUM python evaluation.py --reasonable-rate 0.5 --mode bioBART --init-mode random
-# CUDA_VISIBLE_DEVICES=$CUDA_NUM python evaluation.py --reasonable-rate 0.3 --mode bioBART --init-mode random
+# Evaluation
+CUDA_VISIBLE_DEVICES=$CUDA_NUM python evaluation.py --reasonable-rate 0.7 --mode bioBART --init-mode random
+CUDA_VISIBLE_DEVICES=$CUDA_NUM python evaluation.py --reasonable-rate 0.5 --mode bioBART --init-mode random
+CUDA_VISIBLE_DEVICES=$CUDA_NUM python evaluation.py --reasonable-rate 0.3 --mode bioBART --init-mode random
 
-# cd..
+cd..
+echo "Disease Agnostic Pipeline Execution Completed!"
