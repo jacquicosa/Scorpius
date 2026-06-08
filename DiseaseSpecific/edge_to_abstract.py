@@ -82,7 +82,7 @@ if args.mode == 'sentence':
     model = BioGptForCausalLM.from_pretrained('microsoft/biogpt', pad_token_id=tokenizer.eos_token_id)
     model.to(device)
     model.eval()
-    GPT_batch_size = 1
+    GPT_batch_size = 1 # modified from original batch size of 32 to accomodate 11GB GPU VRAM constraints and avoid OOM errors.
     single_sentence = {}
     test_text = []
     test_dp = []
@@ -355,7 +355,8 @@ elif args.mode == 'finetune':
                 Text.append(' '.join(Bart_input))
                 Assist.append(' '.join(assist))
 
-            # --- FIXED FOR MICRO-BATCHING ---
+            # Due to GPU VRAM constraints, we need to dynamically loop through the Text list 
+            # 1 item at a time instead of processing the whole list in one batch, which may cause OOM errors.
             MICRO_BATCH_SIZE = 1
             Outs = []
             # Dynamically loop through the Text list 1 item at a time
@@ -367,7 +368,7 @@ elif args.mode == 'finetune':
                 A = tokenizer(batch_text,
                     truncation = True,
                     padding = True,
-                    max_length = 1024,  # Fully restored to capture whole strings
+                    max_length = 1024,
                     return_tensors="pt")
                 input_ids = A['input_ids'].to(device)
                 attention_mask = A['attention_mask'].to(device)
