@@ -492,7 +492,7 @@ elif args.action == 'extract':
         pkl.dump(Attack, fl)
 
     # Some pipelines expect the text path itself to hold the pickle data for evaluation.py.
-    # To handle that edge case perfectly without breaking training, let's copy the pickle file 
+    # To handle that edge case perfectly without breaking training, copy the pickle file 
     # over to evaluation's directory if it looks for a specific path shape.
 else:
     raise Exception('Wrong action !!')

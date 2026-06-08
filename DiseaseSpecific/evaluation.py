@@ -310,7 +310,8 @@ else:
             with open(attack_path, 'rb') as fl:
                 attack_data = pkl.load(fl)
         except Exception:
-            # Fallback: Safely read as plain text, ensuring each triple gets its own group list
+            # found that we were not passing a pkl file, but rather a txt file, 
+            # so we create a fallback to read the txt file and convert it to the expected pkl structure
             attack_data = []
             with open(attack_path, 'r') as fl:
                 for line in fl:
